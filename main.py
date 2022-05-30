@@ -1,16 +1,35 @@
-# This is a sample Python script.
+from model. import model
+import cv2
+import numpy as np
+from PIL import
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+#选择、读取图片
+print('请输入图片名：')
+image_name=input()
+img=Image.open(image_name)
+
+#读取BGR通道值
+image=cv2.imread(image_name)
+
+#读取图片通道数和长宽信息
+channel=img.shape[2]
+w=img.shape[1]
+h=img.shape[0]
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+#将图片信息带入model比对得到结果
+Classification=model.model(image_name)
+'''Classification=model.model(channel,w,h)
+'''
+
+#输出结果
+img.show()
+print("该品种为：",Classification)
 
 
-# Press the green button in the gutter to run the script.
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    main()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
