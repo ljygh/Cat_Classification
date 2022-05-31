@@ -1,15 +1,12 @@
 import os
 import shutil
-
 from PIL import Image
 from torch.utils.data import random_split, DataLoader
 from torchvision import transforms
-
+from torchvision.datasets import DatasetFolder
+import numpy as np
 
 # 对文件夹内图片重新命名，种类_序号，将格式统一为jpg
-from torchvision.datasets import DatasetFolder
-
-
 def rename_images(folder_path):
     folder_name = folder_path.split('/')[-1]
     file_list = os.listdir(folder_path)
@@ -42,7 +39,7 @@ def rename_data():
 # 生成train_loader, vali_loader
 def get_train_vali_loader(batch_size):
     transform = transforms.Compose([
-        transforms.Resize((128, 128)),
+        transforms.Resize((224, 224)),
         transforms.ToTensor()
     ])
 
@@ -60,7 +57,7 @@ def get_train_vali_loader(batch_size):
 # 生成test_loader
 def get_test_loader(batch_size):
     transform = transforms.Compose([
-        transforms.Resize((128, 128)),
+        transforms.Resize((224, 224)),
         transforms.ToTensor()
     ])
     test_set = DatasetFolder('data/TEST', loader=lambda x: Image.open(x), extensions="jpg",
@@ -69,7 +66,7 @@ def get_test_loader(batch_size):
     return test_loader
 
 
-# 测试train_val_loader函数
+# 测试get_train_val_loader函数
 def test_train_val_loader():
     train_loader, val_loader = get_train_vali_loader(1)
     print('train_loader size:', len(train_loader), 'val_loader size:', len(val_loader))
@@ -82,6 +79,7 @@ def test_train_val_loader():
         break
 
 
+# 测试get_test_loader函数
 def test_test_loader():
     test_loader = get_test_loader(1)
     print('test_loader size:', len(test_loader))
@@ -97,5 +95,6 @@ def test_test_loader():
 if __name__ == '__main__':
     # rename_images('data/TRAIN/americanshorthair')
     # rename_data()
-    # test_train_val_loader()
-    test_test_loader()
+    test_train_val_loader()
+    # test_test_loader()
+
