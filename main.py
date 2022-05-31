@@ -1,4 +1,4 @@
-from model. import model
+from model import model
 import cv2
 import numpy as np
 from PIL import

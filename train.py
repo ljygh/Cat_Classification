@@ -28,8 +28,9 @@ def train(**kwargs):
 
     # 训练并记录batch loss
     train_loss = []
-    for batch in enumerate(train_loader):
-        imgs, labels = batch
+    for i, sample in enumerate(train_loader):
+        imgs = sample[0]
+        labels = sample[1]
         logits = model(imgs.to(device))
         loss = criterion(logits, labels.to(device))
         optimizer.zero_grad()
@@ -59,8 +60,9 @@ def validate(**kwargs):
     # 验证并记录batch loss
     start_time = time.time()
     valid_loss = []
-    for batch in enumerate(valid_loader):
-        imgs, labels = batch
+    for i, sample in enumerate(valid_loader):
+        imgs = sample[0]
+        labels = sample[1]
         with torch.no_grad():
             logits = model(imgs.to(device))
         loss = criterion(logits, labels.to(device))

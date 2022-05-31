@@ -1,16 +1,7 @@
 # 复现模型
 class Resnet_50():
 
-from tensorflow.keras.applications import ResNet50
-from tensorflow.keras.models import Sequential
-from tensorflow.keras import layers
-from keras.layers import Dropout, Flatten, Dense
 
-#用resent50学习
-model = Sequential()
-model.add(ResNet50(include_top=True, weights='imagenet', input_shape=(224, 224, 3), classes=2))
-
-model.summary()
 
 
 

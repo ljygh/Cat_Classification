@@ -1,132 +1,101 @@
-from torch.utils.data import DataLoader
 import os
-import numpy as np
-import cv2
-import random
+import shutil
 
-def readpic(picture):
-    if picture.find('americanshorthair')>1:
-        return '1_'
-    if picture.find('bengal') > 1:
-        return '2_'
-    if picture.find('mainecoon') > 1:
-        return '3_'
-    if picture.find('ragdoll') > 1:
-        return '4_'
-    if picture.find('scottishfold') > 1:
-        return '5_'
-    if picture.find('sphinx') > 1:
-        return '6_'
-
-image = []
-paths = r"C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\data"
-path1 = 'americanshorthair'
-path2 = 'bengal'
-path3 = 'mainecoon'
-path4 = 'ragdoll'
-path5 = 'scottishfold'
-path6 = 'sphinx'
-notpath = [r'C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\data\TEST',r'C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\data',r'C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\data\TRAIN']
-
-data_pri ={}
-
-for path, subdirs, _ in os.walk(os.path.join(paths)):
-    if path in notpath:
-        continue
-    data_pri[path] = os.listdir(path)
-roots = sorted(list(data_pri.keys()))
-
-for i in roots:
-    print(i)
-    for pathx in data_pri[i]:
-        image.append(os.path.join(i,pathx))
-
-random.shuffle(image)
-#1500
-# test1 = "C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\an_data\test1"
-# validation1 = "C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\an_data\validation1"
-# train1 = 'C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\an_data\train1'
-# x = 0
-for i in range(0,1500):
-    if i < 900:
-        numberx = readpic(image[i])
-        img_read=cv2.imread(image[i])
-        string_name=numberx+str(i+1)+'.jpg'
-        cv2.imwrite(os.path.join(r"C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\an_data\train1",string_name),img_read)
-    if 899 < i < 1200:
-        numberx = readpic(image[i])
-        img_read = cv2.imread(image[i])
-        string_name=numberx+str(i+1)+'.jpg'
-        cv2.imwrite(os.path.join(r"C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\an_data\validation1",string_name),img_read)
-    if i > 1199:
-        numberx = readpic(image[i])
-        img_read = cv2.imread(image[i])
-        string_name=numberx+str(i+1)+'.jpg'
-        cv2.imwrite(os.path.join(r'C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\an_data\test1',string_name),img_read)
-
-#处理数据部分结束
-
-def GaussianNoise(image,percetage):
-    G_Noiseimg = image.copy()
-    w = image.shape[1]
-    h = image.shape[0]
-    G_NoiseNum=int(percetage*image.shape[0]*image.shape[1])
-    for i in range(G_NoiseNum):
-        temp_x = np.random.randint(0,h)
-        temp_y = np.random.randint(0,w)
-        G_Noiseimg[temp_x][temp_y][np.random.randint(3)] = np.random.randn(1)[0]
-    return G_Noiseimg
+from PIL import Image
+from torch.utils.data import random_split, DataLoader
+from torchvision import transforms
 
 
+# 对文件夹内图片重新命名，种类_序号，将格式统一为jpg
+from torchvision.datasets import DatasetFolder
 
-def train_dataloader():
-    train_data = []
-    x = os.listdir(r'C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\an_data\train1')
-    for i in x:
-        image = cv2.imread(r'C:/Users/CHL2454007639/Desktop/Course/python/Cat_Classification/an_data/train1/'+i)
-        image_ch = GaussianNoise(image,0.1)
-        train_data.append(image_ch)
-    train_da = DataLoader(train_data,batch_size=64)
-    return train_da
 
-def test_dataloader():
-    test_data = []
-    x = os.listdir(r'C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\an_data\test1')
-    for i in x:
-        image = cv2.imread(r'C:/Users/CHL2454007639/Desktop/Course/python/Cat_Classification/an_data/test1/'+i)
-        image_ch = GaussianNoise(image,0.1)
-        test_data.append(image_ch)
-    test_da = DataLoader(test_data,batch_size=64)
-    return test_da
+def rename_images(folder_path):
+    folder_name = folder_path.split('/')[-1]
+    file_list = os.listdir(folder_path)
+    index = 0
+    for file_name in file_list:
+        file_path = folder_path + '/' + file_name
+        new_file_name = folder_name + '_' + str(index) + '.jpg'
+        new_file_path = folder_path + '/' + new_file_name
+        shutil.copyfile(file_path, new_file_path)
+        os.remove(file_path)
+        index += 1
 
-def validation_dataloader():
-    va_data = []
-    x = os.listdir(r'C:\Users\CHL2454007639\Desktop\Course\python\Cat_Classification\an_data\validation1')
-    for i in x:
-        image = cv2.imread(r'C:/Users/CHL2454007639/Desktop/Course/python/Cat_Classification/an_data/validation1/'+i)
-        image_ch = GaussianNoise(image,0.1)
-        va_data.append(image_ch)
-    va_da = DataLoader(test_data,batch_size=64)
-    return va_da
 
-# 训练集测试集分割
-def data_split():
-    pass
+# 对整个数据集重命名
+def rename_data():
+    train_folder_list = os.listdir('data/TRAIN')
+    test_folder_list = os.listdir('data/TEST')
 
-# 对图片重新命名，种类_序号
-def rename_images():
-    pass
+    for train_folder_name in train_folder_list:
+        train_folder_path = 'data/TRAIN' + '/' + train_folder_name
+        if train_folder_name == 'americanshorthair':
+            continue
+        rename_images(train_folder_path)
+
+    for test_folder_name in test_folder_list:
+        test_folder_path = 'data/TEST' + '/' + test_folder_name
+        rename_images(test_folder_path)
+
 
 # 生成train_loader, vali_loader
-def get_train_vali_loader():
-    pass
-    # return train_loader, vali_loader
+def get_train_vali_loader(batch_size):
+    transform = transforms.Compose([
+        transforms.Resize((128, 128)),
+        transforms.ToTensor()
+    ])
+
+    train_val_set = DatasetFolder('data/TRAIN', loader=lambda x: Image.open(x), extensions="jpg",
+                              transform=transform)
+    train_size = int(len(train_val_set) * 0.75)
+    val_size = len(train_val_set) - train_size
+    train_set, val_set = random_split(train_val_set, [train_size, val_size])
+
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True)
+    return train_loader, val_loader
+
 
 # 生成test_loader
-def get_test_loader():
-    pass
-    # return test_loader
+def get_test_loader(batch_size):
+    transform = transforms.Compose([
+        transforms.Resize((128, 128)),
+        transforms.ToTensor()
+    ])
+    test_set = DatasetFolder('data/TEST', loader=lambda x: Image.open(x), extensions="jpg",
+                              transform=transform)
+    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True)
+    return test_loader
 
-# 测试函数
-def test():
-    pass
+
+# 测试train_val_loader函数
+def test_train_val_loader():
+    train_loader, val_loader = get_train_vali_loader(1)
+    print('train_loader size:', len(train_loader), 'val_loader size:', len(val_loader))
+    for i, sample in enumerate(train_loader):
+        img = sample[0]
+        label = sample[1]
+        print('img shape:', img.shape)
+        print('label shape:', label.shape)
+        print(img)
+        break
+
+
+def test_test_loader():
+    test_loader = get_test_loader(1)
+    print('test_loader size:', len(test_loader))
+    for i, sample in enumerate(test_loader):
+        img = sample[0]
+        label = sample[1]
+        print('img shape:', img.shape)
+        print('label shape:', label.shape)
+        print(img)
+        break
+
+
+if __name__ == '__main__':
+    # rename_images('data/TRAIN/americanshorthair')
+    # rename_data()
+    # test_train_val_loader()
+    test_test_loader()
