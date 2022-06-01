@@ -27,13 +27,58 @@ def rename_data():
 
     for train_folder_name in train_folder_list:
         train_folder_path = 'data/TRAIN' + '/' + train_folder_name
-        if train_folder_name == 'americanshorthair':
-            continue
         rename_images(train_folder_path)
 
     for test_folder_name in test_folder_list:
         test_folder_path = 'data/TEST' + '/' + test_folder_name
         rename_images(test_folder_path)
+
+
+def img_to_color(folder_path):
+    file_list = os.listdir(folder_path)
+    for file_name in file_list:
+        file_path = folder_path + '/' + file_name
+        img = Image.open(file_path)
+        if img.mode != 'RGB':
+            print(file_name, img.size)
+            img = img.convert('RGB')
+            print(img.size)
+            img.save(fp=file_path)
+
+
+def data_to_color():
+    train_folder_list = os.listdir('data/TRAIN')
+    test_folder_list = os.listdir('data/TEST')
+
+    for train_folder_name in train_folder_list:
+        train_folder_path = 'data/TRAIN' + '/' + train_folder_name
+        img_to_color(train_folder_path)
+
+    for test_folder_name in test_folder_list:
+        test_folder_path = 'data/TEST' + '/' + test_folder_name
+        img_to_color(test_folder_path)
+
+
+def check_imgs_in_color(folder_path):
+    file_list = os.listdir(folder_path)
+    for file_name in file_list:
+        file_path = folder_path + '/' + file_name
+        img = Image.open(file_path)
+        if img.mode != 'RGB':
+            print(np.array(img).shape, file_name)
+
+
+def check_data_in_color():
+    train_folder_list = os.listdir('data/TRAIN')
+    test_folder_list = os.listdir('data/TEST')
+
+    for train_folder_name in train_folder_list:
+        train_folder_path = 'data/TRAIN' + '/' + train_folder_name
+        check_imgs_in_color(train_folder_path)
+
+    for test_folder_name in test_folder_list:
+        test_folder_path = 'data/TEST' + '/' + test_folder_name
+        check_imgs_in_color(test_folder_path)
 
 
 # 生成train_loader, vali_loader
@@ -68,14 +113,15 @@ def get_test_loader(batch_size):
 
 # 测试get_train_val_loader函数
 def test_train_val_loader():
-    train_loader, val_loader = get_train_vali_loader(1)
+    train_loader, val_loader = get_train_vali_loader(5)
     print('train_loader size:', len(train_loader), 'val_loader size:', len(val_loader))
     for i, sample in enumerate(train_loader):
         img = sample[0]
         label = sample[1]
         print('img shape:', img.shape)
         print('label shape:', label.shape)
-        print(img)
+        # print(img)
+        # print(label)
         break
 
 
@@ -89,12 +135,16 @@ def test_test_loader():
         print('img shape:', img.shape)
         print('label shape:', label.shape)
         print(img)
+        print(label)
         break
 
 
 if __name__ == '__main__':
     # rename_images('data/TRAIN/americanshorthair')
     # rename_data()
-    test_train_val_loader()
+    # test_train_val_loader()
     # test_test_loader()
+    check_data_in_color()
+    # img_to_color('data/TRAIN/sphinx')
+    # data_to_color()
 

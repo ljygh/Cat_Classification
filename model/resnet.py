@@ -45,7 +45,7 @@ class Residual_block(nn.Module):
         if self.change_input_sequence != None:
             x = self.change_input_sequence(x)
 
-        out += x
+        out = out + x
         return out
 
 
@@ -59,29 +59,29 @@ class Resnet_50(nn.Module):
             MaxPool2d(3, 2)
         )
 
-        layers = []
-        layers.append(Residual_block(64))
+        layers1 = []
+        layers1.append(Residual_block(64))
         for i in range(0, 2):
-            layers.append(Residual_block(256, 4))
-        self.block_sequence1 = Sequential(*layers)
+            layers1.append(Residual_block(256, 4))
+        self.block_sequence1 = Sequential(*layers1)
 
-        layers = []
-        layers.append(Residual_block(256, 2, 2))
+        layers2 = []
+        layers2.append(Residual_block(256, 2, 2))
         for i in range(0, 3):
-            layers.append(Residual_block(512, 4))
-        self.block_sequence2 = Sequential(*layers)
+            layers2.append(Residual_block(512, 4))
+        self.block_sequence2 = Sequential(*layers2)
 
-        layers = []
-        layers.append(Residual_block(512, 2, 2))
+        layers3 = []
+        layers3.append(Residual_block(512, 2, 2))
         for i in range(0, 5):
-            layers.append(Residual_block(1024, 4))
-        self.block_sequence3 = Sequential(*layers)
+            layers3.append(Residual_block(1024, 4))
+        self.block_sequence3 = Sequential(*layers3)
 
-        layers = []
-        layers.append(Residual_block(1024, 2, 2))
+        layers4 = []
+        layers4.append(Residual_block(1024, 2, 2))
         for i in range(0, 2):
-            layers.append(Residual_block(2048, 4))
-        self.block_sequence4 = Sequential(*layers)
+            layers4.append(Residual_block(2048, 4))
+        self.block_sequence4 = Sequential(*layers4)
 
         self.avg_pool = AvgPool2d(7, 1)
         self.fc = nn.Linear(2048, 6)
@@ -108,7 +108,7 @@ def test_Residual_block():
 
 def test_Resnet_50():
     model = Resnet_50()
-    x = torch.autograd.Variable(torch.randn(1, 3, 224, 224))
+    x = torch.autograd.Variable(torch.randn(5, 3, 224, 224))
     out = model(x)
     print(out.shape)
 

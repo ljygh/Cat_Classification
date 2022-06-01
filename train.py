@@ -18,8 +18,7 @@ def train(**kwargs):
     optimizer = kwargs['optimizer']
     epoch = kwargs["epoch"]
 
-    # 设置计算所在device和模型模式
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    # 设置模型模式
     model.train()
 
     # 打印epoch信息
@@ -28,14 +27,18 @@ def train(**kwargs):
 
     # 训练并记录batch loss
     train_loss = []
+    torch.autograd.set_detect_anomaly(True)
     for i, sample in enumerate(train_loader):
         imgs = sample[0]
         labels = sample[1]
-        logits = model(imgs.to(device))
-        loss = criterion(logits, labels.to(device))
+        if torch.cuda.is_available():
+            imgs = imgs.cuda()
+            labels = labels.cuda()
+
+        logits = model(imgs)
+        loss = criterion(logits, labels)
         optimizer.zero_grad()
         loss.backward()
-        grad_norm = nn.utils.clip_grad_norm_(model.parameters(), max_norm=10)
         optimizer.step()
         train_loss.append(loss.item())
 
@@ -53,8 +56,7 @@ def validate(**kwargs):
     valid_loader = kwargs['dataloader']
     criterion = kwargs['criterion']
 
-    # 设置计算所在device和模型模式
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    # 设置模型模式
     model.eval()
 
     # 验证并记录batch loss
@@ -63,9 +65,13 @@ def validate(**kwargs):
     for i, sample in enumerate(valid_loader):
         imgs = sample[0]
         labels = sample[1]
+        if torch.cuda.is_available():
+            imgs = imgs.cuda()
+            labels = labels.cuda()
+
         with torch.no_grad():
-            logits = model(imgs.to(device))
-        loss = criterion(logits, labels.to(device))
+            logits = model(imgs)
+        loss = criterion(logits, labels)
         valid_loss.append(loss.item())
 
     # 计算并打印验证结果信息
@@ -101,14 +107,15 @@ if __name__ == '__main__':
     # 训练的超参数设置
     n_epochs = 100
     early_stop = 20
-    batch_size = 128
-    learning_rate = 0.0003
+    batch_size = 16
+    learning_rate = 0.01
     save_dir = 'models'
 
     # 初始化模型放入设备
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = Resnet_50().to(device)
-    model.device = device
+    model = Resnet_50()
+    if torch.cuda.is_available():
+        model.to(torch.device("cuda"))
+        model = nn.DataParallel(model)
 
     # 初始化损失函数，优化策略和dataloader
     criterion = nn.CrossEntropyLoss()
@@ -149,7 +156,7 @@ if __name__ == '__main__':
                 'epoch': epoch,
                 'save_dir': save_dir,
                 'state_dict': state_dict, },
-                os.path.join(save_dir, '%03d.ckpt' % (epoch + 1)))
+                os.path.join(save_dir, '%03d.ckpt' % (epoch)))
         else:
             # 否则，更新验证损失没有变小的epoch数，如果大于early_stop结束训练
             count += 1
