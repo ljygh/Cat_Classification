@@ -110,9 +110,22 @@ if __name__ == '__main__':
     batch_size = 16
     learning_rate = 0.01
     save_dir = 'models'
+    continue_train = None
+    save_all = False
+
+    min_epoch_loss = math.inf
+    start_epoch = 1
+
 
     # 初始化模型放入设备
     model = Resnet_50()
+    if continue_train != None:
+        checkpoint = torch.load(continue_train)
+        state_dict = checkpoint["state_dict"]
+        model.load_state_dict(state_dict)
+        min_epoch_loss = 1
+        start_epoch = 24
+        n_epochs = 100
     if torch.cuda.is_available():
         model.to(torch.device("cuda"))
         model = nn.DataParallel(model)
@@ -127,11 +140,10 @@ if __name__ == '__main__':
             format('Resnet_50', learning_rate, early_stop, n_epochs, batch_size))
 
     # 训练并记录每个epoch的train_loss和valid_loss
-    min_epoch_loss = math.inf
     count = 0
     loss_record = {'train': [],
                    'validate': []}
-    for epoch in range(1, n_epochs + 1):
+    for epoch in range(start_epoch, n_epochs + start_epoch):
         # 执行一个epoch的训练与验证并记录loss
         train_loss = train(epoch=epoch,
                            dataloader=train_loader,
@@ -148,7 +160,9 @@ if __name__ == '__main__':
             # 如果验证损失小于之前的最小验证损失，保存模型
             min_epoch_loss = val_loss
             count = 0
+            print()
             print('Improve! Epoch_loss: {}'.format(val_loss))
+            print()
             state_dict = model.module.state_dict()
             for key in state_dict.keys():
                 state_dict[key] = state_dict[key].cpu()
@@ -164,6 +178,16 @@ if __name__ == '__main__':
                 print('Early stop training after {} epoches, {} epoches no update, Min epoch loss: {}'.
                              format(epoch + 1, count, min_epoch_loss))
                 break
+            if save_all:
+                state_dict = model.module.state_dict()
+                for key in state_dict.keys():
+                    state_dict[key] = state_dict[key].cpu()
+                torch.save({
+                    'epoch': epoch,
+                    'save_dir': save_dir,
+                    'state_dict': state_dict, },
+                    os.path.join(save_dir, '%03d.ckpt' % (epoch)))
+
 
     # 打印训练过程中train_loss和valid_loss的曲线图
     title = 'Model: {}, Learning rate: {}, Batch size: {}'.format('Resnet_50', learning_rate, batch_size)

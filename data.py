@@ -107,6 +107,7 @@ def get_test_loader(batch_size):
     ])
     test_set = DatasetFolder('data/TEST', loader=lambda x: Image.open(x), extensions="jpg",
                               transform=transform)
+    print(test_set.find_classes('data/TEST'))
     test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True)
     return test_loader
 
@@ -144,7 +145,8 @@ if __name__ == '__main__':
     # rename_data()
     # test_train_val_loader()
     # test_test_loader()
-    check_data_in_color()
+    # check_data_in_color()
     # img_to_color('data/TRAIN/sphinx')
     # data_to_color()
+    get_test_loader(1)
 

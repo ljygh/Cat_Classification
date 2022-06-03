@@ -3,17 +3,17 @@ import time
 import torch
 from torch import nn
 
-from data import get_test_loader
+from data import get_test_loader, get_train_vali_loader
 from model.resnet import Resnet_50
 
 
 # 测试模型，生成结果，计算准确率
-def test(model, test_loader):
+def test(model, data_loader):
     model.eval()
     start_time = time.time()
 
     right_pred = 0
-    for i, sample in enumerate(test_loader):
+    for i, sample in enumerate(data_loader):
         imgs = sample[0]
         labels = sample[1]
         if torch.cuda.is_available():
@@ -34,8 +34,8 @@ def test(model, test_loader):
             if logits[i] == labels[i]:
                 right_pred += 1
 
-    print(right_pred, len(test_loader.dataset))
-    accuracy = right_pred / len(test_loader.dataset)
+    print(right_pred, len(data_loader.dataset))
+    accuracy = right_pred / len(data_loader.dataset)
     end_time = time.time()
     print('Testing Time: %d s, Accuracy: %f' % ((end_time - start_time), accuracy))
 
@@ -54,5 +54,8 @@ if __name__ == '__main__':
         model.to(torch.device("cuda"))
         model = nn.DataParallel(model)
 
-    test_loader = get_test_loader(batch_size)
-    test(model, test_loader)
+    train_loader, val_loader = get_train_vali_loader(batch_size)
+    # test_loader = get_test_loader(batch_size)
+    # test(model, train_loader)
+    test(model, val_loader)
+    # test(model, test_loader)
