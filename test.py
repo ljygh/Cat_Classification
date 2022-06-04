@@ -3,7 +3,7 @@ import time
 import torch
 from torch import nn
 
-from data import get_test_loader, get_train_vali_loader
+from data import get_test_loader, get_train_loader, get_vali_loader
 from model.resnet import Resnet_50
 
 
@@ -41,7 +41,7 @@ def test(model, data_loader):
 
 
 if __name__ == '__main__':
-    ckpt = 'models/080.ckpt'
+    ckpt = 'models/101.ckpt'
     batch_size = 64
 
     model = Resnet_50()
@@ -54,8 +54,11 @@ if __name__ == '__main__':
         model.to(torch.device("cuda"))
         model = nn.DataParallel(model)
 
-    train_loader, val_loader = get_train_vali_loader(batch_size)
-    # test_loader = get_test_loader(batch_size)
+    # train_loader = get_train_loader(batch_size)
     # test(model, train_loader)
+
+    val_loader = get_vali_loader(batch_size)
     test(model, val_loader)
+
+    # test_loader = get_test_loader(batch_size)
     # test(model, test_loader)

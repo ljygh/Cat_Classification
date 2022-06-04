@@ -7,7 +7,7 @@ from matplotlib.pyplot import figure
 from torch import nn
 
 from model.resnet import Resnet_50
-from data import get_train_vali_loader
+from data import get_train_loader, get_vali_loader
 
 # 一个epoch训练
 def train(**kwargs):
@@ -112,8 +112,6 @@ if __name__ == '__main__':
     save_dir = 'models'
     continue_train = None
     save_all = False
-
-    min_epoch_loss = math.inf
     start_epoch = 1
 
 
@@ -123,7 +121,6 @@ if __name__ == '__main__':
         checkpoint = torch.load(continue_train)
         state_dict = checkpoint["state_dict"]
         model.load_state_dict(state_dict)
-        min_epoch_loss = 1
         start_epoch = 24
         n_epochs = 100
     if torch.cuda.is_available():
@@ -133,7 +130,8 @@ if __name__ == '__main__':
     # 初始化损失函数，优化策略和dataloader
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
-    train_loader, valid_loader = get_train_vali_loader(batch_size)
+    train_loader = get_train_loader(batch_size)
+    valid_loader = get_vali_loader(batch_size)
 
     # 打印训练信息
     print('Start training: Model: {}, Learning rate: {}, Early stop: {}, Total epochs: {}, Batch size: {}'.
@@ -141,6 +139,7 @@ if __name__ == '__main__':
 
     # 训练并记录每个epoch的train_loss和valid_loss
     count = 0
+    min_epoch_loss = math.inf
     loss_record = {'train': [],
                    'validate': []}
     for epoch in range(start_epoch, n_epochs + start_epoch):
