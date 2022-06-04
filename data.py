@@ -125,7 +125,8 @@ def get_train_loader(batch_size):
     ])
     t_pad = transforms.Compose([
         transforms.Resize((224, 224)),
-        transforms.Pad(padding=50),
+        transforms.Pad(padding=30),
+        transforms.Resize((224, 224)),
         transforms.ToTensor()
     ])
     t_rotation = transforms.Compose([
@@ -138,6 +139,7 @@ def get_train_loader(batch_size):
         transforms.RandomHorizontalFlip(p=1),
         transforms.ToTensor()
     ])
+
     normal_set = DatasetFolder('data/TRAIN', loader=lambda x: Image.open(x), extensions="jpg",
                                   transform=t_normal)
     pad_set = DatasetFolder('data/TRAIN', loader=lambda x: Image.open(x), extensions="jpg",
@@ -146,6 +148,7 @@ def get_train_loader(batch_size):
                                   transform=t_rotation)
     flip_set = DatasetFolder('data/TRAIN', loader=lambda x: Image.open(x), extensions="jpg",
                                   transform=t_flip)
+
     train_set = torch.utils.data.ConcatDataset([normal_set, pad_set, rotation_set, flip_set])
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True)
     return train_loader

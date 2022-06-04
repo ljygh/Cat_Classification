@@ -1,6 +1,7 @@
 import time
 
 import torch
+import torchvision.models
 from torch import nn
 
 from data import get_test_loader, get_train_loader, get_vali_loader
@@ -41,10 +42,11 @@ def test(model, data_loader):
 
 
 if __name__ == '__main__':
-    ckpt = 'models/101.ckpt'
-    batch_size = 64
+    ckpt = 'models/002.ckpt'
+    batch_size = 32
 
-    model = Resnet_50()
+    # model = Resnet_50()
+    model = torchvision.models.resnet50()
     checkpoint = torch.load(ckpt)
     state_dict = checkpoint["state_dict"]
     model.load_state_dict(state_dict)

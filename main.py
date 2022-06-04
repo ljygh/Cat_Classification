@@ -1,11 +1,13 @@
 import torch
+import torchvision
+
 from classify import clsfy_img, clsfy_imgs
 from model.resnet import Resnet_50
 
 
 def single():
-    model = Resnet_50()
-    ckpt = 'models/080.ckpt'
+    model = torchvision.models.resnet50()
+    ckpt = 'models/036.ckpt'
     checkpoint = torch.load(ckpt)
     state_dict = checkpoint["state_dict"]
     model.load_state_dict(state_dict)

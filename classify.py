@@ -2,6 +2,7 @@ import os
 import shutil
 
 import torch
+import torchvision.models
 from PIL import Image
 from torchvision import transforms
 
@@ -26,8 +27,8 @@ def clsfy_img(model, file_path):
 
 
 def clsfy_imgs(folder_path):
-    model = Resnet_50()
-    ckpt = 'models/080.ckpt'
+    model = torchvision.models.resnet50()
+    ckpt = 'models/036.ckpt'
     checkpoint = torch.load(ckpt)
     state_dict = checkpoint["state_dict"]
     model.load_state_dict(state_dict)
@@ -50,48 +51,11 @@ def clsfy_imgs(folder_path):
         else:
             os.mkdir(folder_path + '/' + type_name)
             shutil.copyfile(file_path, folder_path + '/' + type_name + '/' + file_name)
-        # if type == 0:
-        #     if os.path.exists(folder_path + '/' + 'americanshorthair'):
-        #         shutil.copyfile(file_path, folder_path + '/' + 'americanshorthair' + '/' + file_name)
-        #     else:
-        #         os.mkdir(folder_path + '/' + 'americanshorthair')
-        #         shutil.copyfile(file_path, folder_path + '/' + 'americanshorthair' + '/' + file_name)
-        # elif type == 1:
-        #     if os.path.exists(folder_path + '/' + 'bengal'):
-        #         shutil.copyfile(file_path, folder_path + '/' + 'bengal' + '/' + file_name)
-        #     else:
-        #         os.mkdir(folder_path + '/' + 'bengal')
-        #         shutil.copyfile(file_path, folder_path + '/' + 'bengal' + '/' + file_name)
-        # elif type == 2:
-        #     if os.path.exists(folder_path + '/' + 'mainecoon'):
-        #         shutil.copyfile(file_path, folder_path + '/' + 'mainecoon' + '/' + file_name)
-        #     else:
-        #         os.mkdir(folder_path + '/' + 'mainecoon')
-        #         shutil.copyfile(file_path, folder_path + '/' + 'mainecoon' + '/' + file_name)
-        # elif type == 3:
-        #     if os.path.exists(folder_path + '/' + 'ragdoll'):
-        #         shutil.copyfile(file_path, folder_path + '/' + 'ragdoll' + '/' + file_name)
-        #     else:
-        #         os.mkdir(folder_path + '/' + 'ragdoll')
-        #         shutil.copyfile(file_path, folder_path + '/' + 'ragdoll' + '/' + file_name)
-        # elif type == 4:
-        #     if os.path.exists(folder_path + '/' + 'scottishfold'):
-        #         shutil.copyfile(file_path, folder_path + '/' + 'scottishfold' + '/' + file_name)
-        #     else:
-        #         os.mkdir(folder_path + '/' + 'scottishfold')
-        #         shutil.copyfile(file_path, folder_path + '/' + 'scottishfold' + '/' + file_name)
-        # elif type == 5:
-        #     if os.path.exists(folder_path + '/' + 'sphinx'):
-        #         shutil.copyfile(file_path, folder_path + '/' + 'sphinx' + '/' + file_name)
-        #     else:
-        #         os.mkdir(folder_path + '/' + 'sphinx')
-        #         shutil.copyfile(file_path, folder_path + '/' + 'sphinx' + '/' + file_name)
-
 
 
 def test_clsfy_img():
-    model = Resnet_50()
-    ckpt = 'models/080.ckpt'
+    model = torchvision.models.resnet50()
+    ckpt = 'models/036.ckpt'
     checkpoint = torch.load(ckpt)
     state_dict = checkpoint["state_dict"]
     model.load_state_dict(state_dict)

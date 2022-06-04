@@ -2,6 +2,7 @@ import math
 import os
 import time
 import torch
+import torchvision.models
 from matplotlib import pyplot as plt
 from matplotlib.pyplot import figure
 from torch import nn
@@ -105,6 +106,7 @@ def plot_learning_curve(loss_record, title):
 # 训练主程序
 if __name__ == '__main__':
     # 训练的超参数设置
+    mymodel = 'own-50'
     n_epochs = 100
     early_stop = 20
     batch_size = 16
@@ -114,9 +116,19 @@ if __name__ == '__main__':
     save_all = False
     start_epoch = 1
 
+    assert mymodel in ['own-50', 'torch-50-pre', 'torch-50']
+
 
     # 初始化模型放入设备
-    model = Resnet_50()
+    if mymodel == 'own-50':
+        model = Resnet_50()
+    elif mymodel == 'torch-50-pre':
+        model = torchvision.models.resnet50(pretrained=True)
+    elif mymodel == 'torch-50':
+        model = torchvision.models.resnet50(pretrained=False)
+    else:
+        model = None
+
     if continue_train != None:
         checkpoint = torch.load(continue_train)
         state_dict = checkpoint["state_dict"]
@@ -132,10 +144,12 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-5)
     train_loader = get_train_loader(batch_size)
     valid_loader = get_vali_loader(batch_size)
+    train_size = len(train_loader.dataset)
+    val_size = len(valid_loader.dataset)
 
     # 打印训练信息
-    print('Start training: Model: {}, Learning rate: {}, Early stop: {}, Total epochs: {}, Batch size: {}'.
-            format('Resnet_50', learning_rate, early_stop, n_epochs, batch_size))
+    print('Start training: Model: {}, Batch size: {}, Learning rate: {}, Early stop: {}, Total epochs: {}, train size: {}, val size: {}'.
+        format(mymodel, batch_size, learning_rate, early_stop, n_epochs, train_size, val_size))
 
     # 训练并记录每个epoch的train_loss和valid_loss
     count = 0
