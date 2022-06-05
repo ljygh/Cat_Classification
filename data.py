@@ -10,6 +10,7 @@ import numpy as np
 np.set_printoptions(threshold=np.inf)
 
 
+# 原数据kaggle上下载，分为TRAIN，TEST两个文件夹，此函数将TRAIN文件
 def split_train_val_data():
     train_path = 'data/TRAIN'
     val_path = 'data/VAL'

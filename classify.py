@@ -30,7 +30,7 @@ def clsfy_img(model, file_path):
 
 def clsfy_imgs(folder_path):
     model = torchvision.models.resnet50()
-    ckpt = 'models/036.ckpt'
+    ckpt = 'models/best_model.ckpt'
     checkpoint = torch.load(ckpt)
     state_dict = checkpoint["state_dict"]
     model.load_state_dict(state_dict)
@@ -62,7 +62,7 @@ def clsfy_imgs(folder_path):
 
 def test_clsfy_img():
     model = torchvision.models.resnet50()
-    ckpt = 'models/036.ckpt'
+    ckpt = 'models/best_model.ckpt'
     checkpoint = torch.load(ckpt)
     state_dict = checkpoint["state_dict"]
     model.load_state_dict(state_dict)

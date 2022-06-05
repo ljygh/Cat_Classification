@@ -9,7 +9,7 @@ from model.resnet import Resnet_50
 
 def single():
     model = torchvision.models.resnet50()
-    ckpt = 'models/036.ckpt'
+    ckpt = 'models/best_model.ckpt'
     checkpoint = torch.load(ckpt)
     state_dict = checkpoint["state_dict"]
     model.load_state_dict(state_dict)

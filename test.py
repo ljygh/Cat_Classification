@@ -42,8 +42,8 @@ def test(model, data_loader):
 
 
 if __name__ == '__main__':
-    ckpt = 'models/012.ckpt'
-    batch_size = 16
+    ckpt = 'models/003.ckpt'
+    batch_size = 128
 
     # model = Resnet_50()
     model = torchvision.models.resnet50()
@@ -62,5 +62,5 @@ if __name__ == '__main__':
     val_loader = get_vali_loader(batch_size)
     test(model, val_loader)
 
-    # test_loader = get_test_loader(batch_size)
-    # test(model, test_loader)
+    test_loader = get_test_loader(batch_size)
+    test(model, test_loader)
