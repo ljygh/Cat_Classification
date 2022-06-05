@@ -13,6 +13,8 @@ def clsfy_img(model, file_path):
     model.eval()
 
     img = Image.open(file_path)
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
     transform = transforms.Compose([
         transforms.Resize((224, 224)),
         transforms.ToTensor()
@@ -32,10 +34,14 @@ def clsfy_imgs(folder_path):
     checkpoint = torch.load(ckpt)
     state_dict = checkpoint["state_dict"]
     model.load_state_dict(state_dict)
+    contain_njpg_file = False
 
     file_list = os.listdir(folder_path)
     for file_name in file_list:
         file_path = folder_path + '/' + file_name
+        if not file_path.endswith('jpg'):
+            contain_njpg_file = True
+            continue
         type = clsfy_img(model, file_path)
 
         type_name_dic = {0 : 'americanshorthair',
@@ -51,6 +57,7 @@ def clsfy_imgs(folder_path):
         else:
             os.mkdir(folder_path + '/' + type_name)
             shutil.copyfile(file_path, folder_path + '/' + type_name + '/' + file_name)
+    return contain_njpg_file
 
 
 def test_clsfy_img():

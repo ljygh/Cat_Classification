@@ -42,8 +42,8 @@ def test(model, data_loader):
 
 
 if __name__ == '__main__':
-    ckpt = 'models/002.ckpt'
-    batch_size = 32
+    ckpt = 'models/012.ckpt'
+    batch_size = 16
 
     # model = Resnet_50()
     model = torchvision.models.resnet50()

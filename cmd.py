@@ -1,3 +1,5 @@
+import os
+
 import torch
 import torchvision
 
@@ -14,6 +16,12 @@ def single():
 
     # print('请输入图片路径')
     file_path = input('请输入图片路径\n')
+    if not os.path.isfile(file_path):
+        print('该路径不是文件！')
+        return
+    if not file_path.endswith('.jpg'):
+        print('图片必须是jpg格式！')
+        return
 
     type_name_dic = {0: 'americanshorthair',
                      1: 'bengal',
@@ -30,9 +38,15 @@ def single():
 def multiple():
     # print('请输入文件夹路径')
     folder_path = input('请输入文件夹路径\n')
+    if not os.path.isdir(folder_path):
+        print('路径必须是文件夹')
+        return
     print('分类中')
-    clsfy_imgs(folder_path)
-    print('分类完成，已在文件夹下对图片归类')
+    contain_njpg_file = clsfy_imgs(folder_path)
+    njpg_warn = ''
+    if contain_njpg_file:
+        njpg_warn = '文件夹中含非jpg文件，这些文件无法被分类'
+    print('分类完成，已在文件夹下对图片归类。', njpg_warn)
 
 
 
