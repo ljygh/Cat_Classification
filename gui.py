@@ -7,39 +7,48 @@ import torchvision
 
 from classify import clsfy_img, clsfy_imgs
 
+#创建猫种类分类tkinter应用程序主窗口
 root = tkinter.Tk()
 root.title('猫种类分类器')
 root['height'] = 140
 root['width'] = 200
 
+#在窗口上创建标签组件并放置
 clsfy_label = tkinter.Label(root, text='猫种类分类器', width=80)
 clsfy_label.grid(row=0, column=0, columnspan=3, pady=20)
 path_label = tkinter.Label(root, text='路径:', width='20')
 path_label.grid(row=2, column=0)
 
+#分类方式关联的变量，0表示单图片：1表示多图片，默认为单图片
 clsfy_type = tkinter.IntVar(value=0)
+#设置单图片分类单选按钮
 single_ratioB = tkinter.Radiobutton(root, variable=clsfy_type, value=0, text='单图片分类')
 single_ratioB.grid(row=1, column=0, pady=20)
+#设置多图片分类单选按钮
 multiple_ratioB = tkinter.Radiobutton(root, variable=clsfy_type, value=1, text='多图片分类')
 multiple_ratioB.grid(row=1, column=1)
 
+#创建路径文本框
 path = tkinter.StringVar(root, value='')
 path_entry = tkinter.Entry(root, width=50, textvariable=path)
 path_entry.grid(row=2, column=1, pady=20)
 
+#浏览函数
 def browse():
     if clsfy_type.get() == 0:
-        file_path = filedialog.askopenfilename()
-        path_entry.delete(0, len(path.get()))
-        path_entry.insert(0, file_path)
+        file_path = filedialog.askopenfilename()#获得选择好的文件路径
+        path_entry.delete(0, len(path.get()))#删除文本框中原文件路径
+        path_entry.insert(0, file_path)#输入新选择好的文件路径
         print(path.get())
     else:
-        folder_path = filedialog.askdirectory()
-        path_entry.delete(0, len(path.get()))
-        path_entry.insert(0, folder_path)
+        folder_path = filedialog.askdirectory()#获得选择好的文件夹路径
+        path_entry.delete(0, len(path.get()))#删除文本框中原文件夹路径
+        path_entry.insert(0, folder_path)#输入新选择好的文件夹路径
         print(path.get())
 
+#分类函数
 def clsfy():
+    #单图片分类
     if clsfy_type.get() == 0:
         model = torchvision.models.resnet50()
         ckpt = 'models/best_model.ckpt'
@@ -64,6 +73,7 @@ def clsfy():
         type = clsfy_img(model, file_path)
         type_name = type_name_dic[type]
         tkinter.messagebox.showinfo(title='单图片分类结果', message='图片中的猫种类为：{}'.format(type_name))
+    #多图片分类
     else:
         folder_path = path.get()
         if not os.path.isdir(folder_path):
@@ -76,9 +86,11 @@ def clsfy():
             njpg_warn = '文件夹中含非jpg文件，这些文件无法被分类'
         tkinter.messagebox.showinfo(title='分类完成', message='分类完成，已在文件夹下对图片归类。 ' + njpg_warn)
 
+#创建浏览与分类按钮并关联相关函数
 browse_button = tkinter.Button(root, text='浏览', command=browse)
 browse_button.grid(row=2, column=2)
 clsfy_button = tkinter.Button(root, text='分类', command=clsfy)
 clsfy_button.grid(row=3, column=0, columnspan=3, pady=20)
 
+#启动消息循环
 root.mainloop()
