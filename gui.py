@@ -50,12 +50,14 @@ def browse():
 def clsfy():
     #单图片分类
     if clsfy_type.get() == 0:
+        #加载模型及模型参数
         model = torchvision.models.resnet50()
         ckpt = 'models/best_model.ckpt'
         checkpoint = torch.load(ckpt)
         state_dict = checkpoint["state_dict"]
         model.load_state_dict(state_dict)
 
+        #获取文件路径并判断文件是否符合标准
         file_path = path.get()
         if not os.path.isfile(file_path):
             tkinter.messagebox.showinfo(title='提示', message='该路径不是文件！')
@@ -63,6 +65,7 @@ def clsfy():
         if not file_path.endswith('.jpg'):
             tkinter.messagebox.showinfo(title='提示', message='图片必须是jpg格式！')
             return
+        #将文件带入模型计算，输出结果
         type_name_dic = {0: 'americanshorthair',
                          1: 'bengal',
                          2: 'mainecoon',
@@ -75,10 +78,12 @@ def clsfy():
         tkinter.messagebox.showinfo(title='单图片分类结果', message='图片中的猫种类为：{}'.format(type_name))
     #多图片分类
     else:
+        #获得文件夹路径并判断是否为文件夹
         folder_path = path.get()
         if not os.path.isdir(folder_path):
             tkinter.messagebox.showinfo(title='提示', message='路径必须是文件夹')
             return
+        #将文件夹代入函数计算，检测是否有不符要求的文件，输出结果
         tkinter.messagebox.showinfo(title='开始分类', message='点击确定开始分类，需要一定时间，请稍等')
         contain_njpg_file = clsfy_imgs(folder_path)
         njpg_warn = ''
