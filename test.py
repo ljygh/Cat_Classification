@@ -17,7 +17,8 @@ def test(model, data_loader):
 
     #测试数据集并记录结果
     right_pred = 0
-    for i, sample in enumerate(data_loader):
+    #将数据集分为预测和标签部分
+    for i, sample in enumerate(data_loader):#将data_loader组合为一个索引序列，同时列出数据sample和数据下标i
         imgs = sample[0]
         labels = sample[1]
         if torch.cuda.is_available():#GPU是否可用
@@ -34,7 +35,7 @@ def test(model, data_loader):
             logits = logits.argmax(dim=-1).numpy()
             labels = labels.numpy()
 
-        #测试值与训练值比对并记录正确数
+        #预测与标签比对并记录正确数
         for i in range(0, len(logits)):
             if logits[i] == labels[i]:
                 right_pred += 1
