@@ -9,17 +9,17 @@ from torchvision import transforms
 from model.resnet import Resnet_50
 
 
-def clsfy_img(model, file_path):#将图像设置为适合程序
+def clsfy_img(model, file_path):#将图片改为适合程序
     model.eval()
-    #在程序打开图像
+    #在程序打开图片
     img = Image.open(file_path)
     if img.mode != 'RGB':
         img = img.convert('RGB')
     transform = transforms.Compose([
-        transforms.Resize((224, 224)),# 模型大小转换
+        transforms.Resize((224, 224)),# 图片大小转换
         transforms.ToTensor()#数据转换成tensor
     ])
-    img = transform(img)#图像转换
+    img = transform(img)#图片转换
     img = torch.unsqueeze(img, 0)
 
     logits = model(img)
@@ -76,4 +76,4 @@ def test_clsfy_imgs():
 
 if __name__ == '__main__':
     # test_clsfy_img()
-    test_clsfy_imgs() #看猫图像
+    test_clsfy_imgs() #看猫图片
